@@ -1,0 +1,23 @@
+
+name: Deploy on Release
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    name: Deploy to Render
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Trigger Render deployment
+        env:
+          DEPLOY_HOOK: ${{ secrets.RENDER_DEPLOY_HOOK }}
+        run: |
+          test -n "$DEPLOY_HOOK"
+          curl --fail --show-error --silent --retry 3 \
+            -X POST "$DEPLOY_HOOK"
